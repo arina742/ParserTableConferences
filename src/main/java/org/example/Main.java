@@ -1,20 +1,35 @@
 package org.example;
+
 import org.jsoup.Jsoup;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    //check if file is empty
+    public static boolean isFileEmpty(File file) {
+        return file.length() == 0;
+    }
 
-        //todo: realise connected with file
-        // because if we will connect directly often,site may block us.
+    //get information about events from "all-events.ru"
+    public static void getInfo1() throws IOException {
+        File file = new File("all-events.html");
+        FileWriter fileWriter = new FileWriter(file);
+        Document doc = null;
 
-        //realised to access for the site_1
-        Document doc = Jsoup.connect("https://all-events.ru/events/calendar/type-is-conferencia/theme-is-informatsionnye_tekhnologii/").get();
+        if (file.exists()) {
+            if (isFileEmpty(file)) {
+                doc = Jsoup.connect("https://all-events.ru/events/calendar/type-is-conferencia/theme-is-informatsionnye_tekhnologii/").get();
+                fileWriter.write(String.valueOf(doc));
+            }
+        }
+        doc = Jsoup.parse(file, "UTF-8", "https://all-events.ru/events/calendar/type-is-conferencia/theme-is-informatsionnye_tekhnologii/");
+
 
         //collected name of events from site
         Elements eventsName = doc.getElementsByClass("event-name");
@@ -30,7 +45,7 @@ public class Main {
 
         //deleted extra dates
         for (int i = 0; i < listDateEvents.size(); i++) {
-            if(listDateEvents.get(i).contains("января") ||
+            if (listDateEvents.get(i).contains("января") ||
                     listDateEvents.get(i).contains("февраля") ||
                     listDateEvents.get(i).contains("марта") ||
                     listDateEvents.get(i).contains("апреля") ||
@@ -41,11 +56,17 @@ public class Main {
                     listDateEvents.get(i).contains("сентября") ||
                     listDateEvents.get(i).contains("октября") ||
                     listDateEvents.get(i).contains("ноября") ||
-                    listDateEvents.get(i).contains("декабря")){
+                    listDateEvents.get(i).contains("декабря")) {
                 listDateEvents.remove(i);
                 i--;
             }
         }
+
+        //collected links of events from site
+        Elements eventsLink = doc.getElementsByClass("link-button");
+        ArrayList<String> listLinkEvents = new ArrayList<>();
+        eventsLink.forEach(element -> listLinkEvents.add(element.attr("href")));
+
 
         //collected locations of events from site
         Elements eventsPlace = doc.getElementsByClass("event-place");
@@ -54,8 +75,12 @@ public class Main {
 
         //print information about events
         for (int i = 0; i < listNameEvents.size(); i++) {
-            System.out.println(listNameEvents.get(i) + " " + listPlaceEvents.get(i) + " " + listDateEvents.get(i));
+            System.out.println(listNameEvents.get(i) + "\n" + listPlaceEvents.get(i) + "\n" + listDateEvents.get(i) + "\n" + "https://all-events.ru" + listLinkEvents.get(i) + "\n\n");
         }
+        fileWriter.flush();
+    }
 
+    public static void main(String[] args) throws IOException {
+        getInfo1();
     }
 }
