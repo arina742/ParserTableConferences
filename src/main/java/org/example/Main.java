@@ -4,11 +4,15 @@ import org.jsoup.Jsoup;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+
+//the listPlaceEvents has been removed from the output, since not all sites can get a place from the home page
+
 
 public class Main {
     //check if file is empty
@@ -69,18 +73,55 @@ public class Main {
 
 
         //collected locations of events from site
-        Elements eventsPlace = doc.getElementsByClass("event-place");
-        ArrayList<String> listPlaceEvents = new ArrayList<>();
-        eventsPlace.forEach(element -> listPlaceEvents.add(element.text()));
+//        Elements eventsPlace = doc.getElementsByClass("event-place");
+//        ArrayList<String> listPlaceEvents = new ArrayList<>();
+//        eventsPlace.forEach(element -> listPlaceEvents.add(element.text()));
 
         //print information about events
         for (int i = 0; i < listNameEvents.size(); i++) {
-            System.out.println(listNameEvents.get(i) + "\n" + listPlaceEvents.get(i) + "\n" + listDateEvents.get(i) + "\n" + "https://all-events.ru" + listLinkEvents.get(i) + "\n\n");
+            System.out.println(listNameEvents.get(i) + "\n" + listDateEvents.get(i) + "\n" + "https://all-events.ru" + listLinkEvents.get(i) + "\n\n");
+        }
+        fileWriter.flush();
+    }
+
+    //get information about events from "gorodzovet.ru"
+    public static void getInfo2() throws IOException {
+        File file = new File("gorodzovet.html");
+        FileWriter fileWriter = new FileWriter(file);
+        Document doc = null;
+
+        if (file.exists()) {
+            if (isFileEmpty(file)) {
+                doc = Jsoup.connect("https://gorodzovet.ru/spb/it/").get();
+                fileWriter.write(String.valueOf(doc));
+            }
+        }
+        doc = Jsoup.parse(file, "UTF-8", "https://gorodzovet.ru/spb/it/");
+
+        Elements eventsName = doc.getElementsByTag("h3");
+        ArrayList<String> listNameEvents = new ArrayList<>();
+        eventsName.forEach(element -> listNameEvents.add(element.text()));
+
+        //todo:swap the date and month
+
+        Elements eventsDate = doc.getElementsByClass("event-date");
+        ArrayList<String> listDateEvents = new ArrayList<>();
+        eventsDate.forEach(element -> listDateEvents.add(element.text()));
+
+        Elements eventsLink = doc.getElementsByClass("event-link save-click");
+        ArrayList<String> listLinkEvents = new ArrayList<>();
+        eventsLink.forEach(element -> listLinkEvents.add(element.attr("href")));
+
+        //todo:make a general array and sort by date
+
+        for (int i = 0; i < listNameEvents.size(); i++) {
+            System.out.println(listNameEvents.get(i) + "\n" + listDateEvents.get(i) + "\n" + "https://gorodzovet.ru/spb" + listLinkEvents.get(i) + "\n\n");
         }
         fileWriter.flush();
     }
 
     public static void main(String[] args) throws IOException {
         getInfo1();
+        getInfo2();
     }
 }
