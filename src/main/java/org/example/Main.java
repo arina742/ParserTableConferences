@@ -1,14 +1,12 @@
 package org.example;
 
 import org.jsoup.Jsoup;
-import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 
 //the listPlaceEvents has been removed from the output, since not all sites can get a place from the home page
@@ -20,108 +18,81 @@ public class Main {
         return file.length() == 0;
     }
 
-    //get information about events from "all-events.ru"
-    public static void getInfo1() throws IOException {
-        File file = new File("all-events.html");
+    public static Document FileCheck(String filename, String url) throws IOException {
+        File file = new File(filename + ".html");
         FileWriter fileWriter = new FileWriter(file);
         Document doc = null;
 
-        if (file.exists()) {
-            if (isFileEmpty(file)) {
-                doc = Jsoup.connect("https://all-events.ru/events/calendar/type-is-conferencia/theme-is-informatsionnye_tekhnologii/").get();
+        if(file.exists()){
+            if(isFileEmpty(file)){
+                doc = Jsoup.connect(url).get();
                 fileWriter.write(String.valueOf(doc));
             }
         }
-        doc = Jsoup.parse(file, "UTF-8", "https://all-events.ru/events/calendar/type-is-conferencia/theme-is-informatsionnye_tekhnologii/");
-
-
-        //collected name of events from site
-        Elements eventsName = doc.getElementsByClass("event-name");
-        ArrayList<String> listNameEvents = new ArrayList<>();
-        eventsName.forEach(element -> listNameEvents.add(element.text()));
-
-        //collected dates of events from site
-        Elements eventsDate = doc.getElementsByClass("event-date");
-        ArrayList<String> listDateEvents = new ArrayList<>();
-        eventsDate.forEach(element -> listDateEvents.add(element.text()));
-
-        //todo: will be good, if someone figure out how don't collect extra dates in previous step
-
-        //deleted extra dates
-        for (int i = 0; i < listDateEvents.size(); i++) {
-            if (listDateEvents.get(i).contains("января") ||
-                    listDateEvents.get(i).contains("февраля") ||
-                    listDateEvents.get(i).contains("марта") ||
-                    listDateEvents.get(i).contains("апреля") ||
-                    listDateEvents.get(i).contains("мая") ||
-                    listDateEvents.get(i).contains("июня") ||
-                    listDateEvents.get(i).contains("июля") ||
-                    listDateEvents.get(i).contains("августа") ||
-                    listDateEvents.get(i).contains("сентября") ||
-                    listDateEvents.get(i).contains("октября") ||
-                    listDateEvents.get(i).contains("ноября") ||
-                    listDateEvents.get(i).contains("декабря")) {
-                listDateEvents.remove(i);
-                i--;
-            }
-        }
-
-        //collected links of events from site
-        Elements eventsLink = doc.getElementsByClass("link-button");
-        ArrayList<String> listLinkEvents = new ArrayList<>();
-        eventsLink.forEach(element -> listLinkEvents.add(element.attr("href")));
-
-
-        //collected locations of events from site
-//        Elements eventsPlace = doc.getElementsByClass("event-place");
-//        ArrayList<String> listPlaceEvents = new ArrayList<>();
-//        eventsPlace.forEach(element -> listPlaceEvents.add(element.text()));
-
-        //print information about events
-        for (int i = 0; i < listNameEvents.size(); i++) {
-            System.out.println(listNameEvents.get(i) + "\n" + listDateEvents.get(i) + "\n" + "https://all-events.ru" + listLinkEvents.get(i) + "\n\n");
-        }
-        fileWriter.flush();
+        doc = Jsoup.parse(file, "UTF-8", url);
+        return doc;
     }
 
-    //get information about events from "gorodzovet.ru"
-    public static void getInfo2() throws IOException {
-        File file = new File("gorodzovet.html");
-        FileWriter fileWriter = new FileWriter(file);
-        Document doc = null;
+    public static class Event {
+        private String name;
+        private String date;
+        private String link;
 
-        if (file.exists()) {
-            if (isFileEmpty(file)) {
-                doc = Jsoup.connect("https://gorodzovet.ru/spb/it/").get();
-                fileWriter.write(String.valueOf(doc));
+        public Event(String name, String date, String link) {
+            this.name = name;
+            this.date = date;
+            this.link = link;
+        }
+    }
+    ArrayList<Event> listEvents = new ArrayList<>();
+
+
+    public void GetEventsGor() throws IOException {
+        String url = "https://gorodzovet.ru/spb/it/";
+        Document doc = FileCheck("gorodzovet", url);
+
+        Elements events = doc.getElementsByClass("event-block");
+        for (int i = 0; i < events.size(); i++) {
+            String name = events.get(i).getElementsByTag("h3").text();
+            String day = events.get(i).getElementsByClass("event-day").text();
+            String date;
+            if(day.length() == 0){
+                date = events.get(i).getElementsByClass("event-date").text();
             }
+            else {
+                String month = events.get(i).getElementsByClass("event-month").text();
+                date = day + " " + month;
+            }
+            String link = events.get(i).getElementsByClass("event-link save-click").attr("href");
+            listEvents.add(new Event(name, date, "https://gorodzovet.ru"+link));
         }
-        doc = Jsoup.parse(file, "UTF-8", "https://gorodzovet.ru/spb/it/");
+    }
 
-        Elements eventsName = doc.getElementsByTag("h3");
-        ArrayList<String> listNameEvents = new ArrayList<>();
-        eventsName.forEach(element -> listNameEvents.add(element.text()));
+    public void GetEventsAll() throws IOException {
+        String url = "https://all-events.ru/events/calendar/type-is-conferencia/theme-is-informatsionnye_tekhnologii/";
+        Document doc = FileCheck("all-events", url);
 
-        //todo:swap the date and month
-
-        Elements eventsDate = doc.getElementsByClass("event-date");
-        ArrayList<String> listDateEvents = new ArrayList<>();
-        eventsDate.forEach(element -> listDateEvents.add(element.text()));
-
-        Elements eventsLink = doc.getElementsByClass("event-link save-click");
-        ArrayList<String> listLinkEvents = new ArrayList<>();
-        eventsLink.forEach(element -> listLinkEvents.add(element.attr("href")));
-
-        //todo:make a general array and sort by date
-
-        for (int i = 0; i < listNameEvents.size(); i++) {
-            System.out.println(listNameEvents.get(i) + "\n" + listDateEvents.get(i) + "\n" + "https://gorodzovet.ru/spb" + listLinkEvents.get(i) + "\n\n");
+        Elements events = doc.getElementsByClass("event");
+        for (int i = 0; i < events.size(); i++) {
+            String name = events.get(i).getElementsByClass("event-name").text();
+            String date = events.get(i).getElementsByClass("event-date").text();
+            String link = events.get(i).getElementsByClass("link-button").attr("href");
+            listEvents.add(new Event(name, date, "https://all-events.ru"+link));
         }
-        fileWriter.flush();
+    }
+
+    public void PrintEvents(ArrayList<Event> listEvents) {
+        for (int i = 0; i < listEvents.size(); i++) {
+            System.out.println(listEvents.get(i).name + "\n" + listEvents.get(i).date + "\n" + listEvents.get(i).link + "\n\n");
+        }
     }
 
     public static void main(String[] args) throws IOException {
-        getInfo1();
-        getInfo2();
+
+        Main main = new Main();
+        main.GetEventsGor();
+        main.GetEventsAll();
+        main.PrintEvents(main.listEvents);
+
     }
 }
