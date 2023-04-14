@@ -7,6 +7,7 @@ import org.jsoup.select.Elements;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 //the listPlaceEvents has been removed from the output, since not all sites can get a place from the home page
