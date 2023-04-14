@@ -45,6 +45,23 @@ public class Main {
         }
     }
 
+    public String replaceMonth(String str) {
+        str = str.replace("янв", "01");
+        str = str.replace("фев", "02");
+        str = str.replace("мар", "03");
+        str = str.replace("апр", "04");
+        str = str.replace("май", "05");
+        str = str.replace("июн", "06");
+        str = str.replace("июл", "07");
+        str = str.replace("авг", "08");
+        str = str.replace("сен", "09");
+        str = str.replace("окт", "10");
+        str = str.replace("ноя", "11");
+        str = str.replace("дек", "12");
+        str = str.replace(" ", ".");
+        return str;
+    }
+
     ArrayList<Event> listEvents = new ArrayList<>();
 
 
@@ -60,8 +77,9 @@ public class Main {
             if (day.length() == 0) {
                 date = events.get(i).getElementsByClass("event-date").text();
             } else {
-                String month = events.get(i).getElementsByClass("event-month").text();
-                date = day + " " + month;
+                String month = events.get(i).getElementsByClass("event-month").text().toLowerCase();
+                month = replaceMonth(month);
+                date = day + "." + month;
             }
             String link = events.get(i).getElementsByClass("event-link save-click").attr("href");
             listEvents.add(new Event(name, date, "https://gorodzovet.ru" + link));
@@ -76,10 +94,29 @@ public class Main {
         for (int i = 0; i < events.size(); i++) {
             String name = events.get(i).getElementsByClass("event-name").text();
             String date = events.get(i).getElementsByClass("event-date").text();
+            if (date.length() > 10) {
+                date = date.substring(0, 11);
+                String month = date.substring(8, 11);
+
+                month = replaceMonth(month);
+
+                date = date.replace(" - ", "." + month + "-");
+                date = replaceMonth(date);
+            } else if (date.length() < 10) {
+                date = date.substring(0, 6);
+                date = replaceMonth(date);
+            }
             String link = events.get(i).getElementsByClass("link-button").attr("href");
             listEvents.add(new Event(name, date, "https://all-events.ru" + link));
         }
+
+
     }
+
+    //q: я хороший программист?
+    //a: да
+    //q: а почему?
+    //a: потому что ты сделал так, чтобы сайт не забанил тебя за парсинг
 
     public void GetEventsEdu() throws IOException {
         String url = "https://expomap.ru/conference/theme/it-kommunikatsii-svyaz/";
@@ -110,3 +147,4 @@ public class Main {
 
     }
 }
+
