@@ -24,8 +24,8 @@ public class Main {
         FileWriter fileWriter = new FileWriter(file);
         Document doc = null;
 
-        if(file.exists()){
-            if(isFileEmpty(file)){
+        if (file.exists()) {
+            if (isFileEmpty(file)) {
                 doc = Jsoup.connect(url).get();
                 fileWriter.write(String.valueOf(doc));
             }
@@ -45,6 +45,7 @@ public class Main {
             this.link = link;
         }
     }
+
     ArrayList<Event> listEvents = new ArrayList<>();
 
 
@@ -57,15 +58,14 @@ public class Main {
             String name = events.get(i).getElementsByTag("h3").text();
             String day = events.get(i).getElementsByClass("event-day").text();
             String date;
-            if(day.length() == 0){
+            if (day.length() == 0) {
                 date = events.get(i).getElementsByClass("event-date").text();
-            }
-            else {
+            } else {
                 String month = events.get(i).getElementsByClass("event-month").text();
                 date = day + " " + month;
             }
             String link = events.get(i).getElementsByClass("event-link save-click").attr("href");
-            listEvents.add(new Event(name, date, "https://gorodzovet.ru"+link));
+            listEvents.add(new Event(name, date, "https://gorodzovet.ru" + link));
         }
     }
 
@@ -78,7 +78,20 @@ public class Main {
             String name = events.get(i).getElementsByClass("event-name").text();
             String date = events.get(i).getElementsByClass("event-date").text();
             String link = events.get(i).getElementsByClass("link-button").attr("href");
-            listEvents.add(new Event(name, date, "https://all-events.ru"+link));
+            listEvents.add(new Event(name, date, "https://all-events.ru" + link));
+        }
+    }
+
+    public void GetEventsEdu() throws IOException {
+        String url = "https://expomap.ru/conference/theme/it-kommunikatsii-svyaz/";
+        Document doc = FileCheck("expomap", url);
+
+        Elements events = doc.getElementsByClass("cl-item");
+        for (int i = 0; i < events.size(); i++) {
+            String name = events.get(i).getElementsByClass("cli-title").text();
+            String date = events.get(i).getElementsByClass("cli-date").text();
+            String link = events.get(i).getElementsByClass("button icon-sm").attr("href");
+            listEvents.add(new Event(name, date, "https://expomap.ru" + link));
         }
     }
 
@@ -93,6 +106,7 @@ public class Main {
         Main main = new Main();
         main.GetEventsGor();
         main.GetEventsAll();
+        main.GetEventsEdu();
         main.PrintEvents(main.listEvents);
 
     }
