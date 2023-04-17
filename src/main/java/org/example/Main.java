@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Locale;
 
 //the listPlaceEvents has been removed from the output, since not all sites can get a place from the home page
 
@@ -98,9 +99,7 @@ public class Main {
             if (date.length() > 10) {
                 date = date.substring(0, 11);
                 String month = date.substring(8, 11);
-
                 month = replaceMonth(month);
-
                 date = date.replace(" - ", "." + month + "-");
                 date = replaceMonth(date);
             } else if (date.length() < 10) {
@@ -110,8 +109,6 @@ public class Main {
             String link = events.get(i).getElementsByClass("link-button").attr("href");
             listEvents.add(new Event(name, date, "https://all-events.ru" + link));
         }
-
-
     }
 
     //q: я хороший программист?
@@ -142,10 +139,9 @@ public class Main {
 
         Main main = new Main();
         main.GetEventsGor();
-        main.GetEventsAll();
-        main.GetEventsEdu();
+//        main.GetEventsAll();
+//        main.GetEventsEdu();
         main.PrintEvents(main.listEvents);
 
     }
 }
-
