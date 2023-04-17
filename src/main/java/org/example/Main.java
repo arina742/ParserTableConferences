@@ -20,7 +20,7 @@ public class Main {
         return file.length() == 0;
     }
 
-    public static Document FileCheck(String filename, String url) throws IOException {
+    public static Document fileCheck(String filename, String url) throws IOException {
         File file = new File(filename + ".html");
         FileWriter fileWriter = new FileWriter(file);
         Document doc = null;
@@ -53,6 +53,7 @@ public class Main {
         str = str.replace("мар", "03");
         str = str.replace("апр", "04");
         str = str.replace("май", "05");
+        str = str.replace("мая", "05");
         str = str.replace("июн", "06");
         str = str.replace("июл", "07");
         str = str.replace("авг", "08");
@@ -67,9 +68,9 @@ public class Main {
     ArrayList<Event> listEvents = new ArrayList<>();
 
 
-    public void GetEventsGor() throws IOException {
+    public void getEventsGor() throws IOException {
         String url = "https://gorodzovet.ru/spb/it/";
-        Document doc = FileCheck("gorodzovet", url);
+        Document doc = fileCheck("gorodzovet", url);
 
         Elements events = doc.getElementsByClass("event-block");
         for (int i = 0; i < events.size(); i++) {
@@ -88,9 +89,9 @@ public class Main {
         }
     }
 
-    public void GetEventsAll() throws IOException {
+    public void getEventsAll() throws IOException {
         String url = "https://all-events.ru/events/calendar/type-is-conferencia/theme-is-informatsionnye_tekhnologii/";
-        Document doc = FileCheck("all-events", url);
+        Document doc = fileCheck("all-events", url);
 
         Elements events = doc.getElementsByClass("event");
         for (int i = 0; i < events.size(); i++) {
@@ -116,20 +117,59 @@ public class Main {
     //q: а почему?
     //a: потому что ты сделал так, чтобы сайт не забанил тебя за парсинг
 
-    public void GetEventsEdu() throws IOException {
+    public void getEventsExp() throws IOException {
         String url = "https://expomap.ru/conference/theme/it-kommunikatsii-svyaz/";
-        Document doc = FileCheck("expomap", url);
+        Document doc = fileCheck("expomap", url);
 
         Elements events = doc.getElementsByClass("cl-item");
         for (int i = 0; i < events.size(); i++) {
             String name = events.get(i).getElementsByClass("cli-title").text();
             String date = events.get(i).getElementsByClass("cli-date").text();
+            String month1 = null;
+            String month2;
+            int sp = 0, fsp = 0, lsp = 0, msp = 0;
+
+            for (int j = 0; j < date.length(); j++) {
+                if (date.charAt(j) == ' ') {
+                    sp++;
+                    if (sp == 1) {
+                        fsp = j;
+                    }
+                    if (sp == 2) {
+                        msp = j;
+                    }
+                    if (sp >= 4) {
+                        lsp = j;
+                    }
+                }
+            }
+
+            if (sp == 2) {
+                date = date.substring(0, fsp + 4);
+            } else if (sp == 4) {
+                date = date.substring(0, lsp + 4);
+            } else if (sp == 5) {
+                month1 = date.substring(msp, msp + 4);
+                date = date.substring(0, lsp + 4);
+            }
+
+            date = replaceMonth(date);
+
+            month2 = date.substring(date.length() - 3, date.length());
+            date = date.replace("с.", "");
+            if (month1 == null) {
+                date = date.replace(".по.", month2 + "-");
+            } else {
+                date = date.replace(month1, "");
+                date = date.replace(".по.",   "-");
+            }
+
             String link = events.get(i).getElementsByClass("button icon-sm").attr("href");
             listEvents.add(new Event(name, date, "https://expomap.ru" + link));
         }
     }
 
-    public void PrintEvents(ArrayList<Event> listEvents) {
+    public void printEvents(ArrayList<Event> listEvents) {
         for (int i = 0; i < listEvents.size(); i++) {
             System.out.println(listEvents.get(i).name + "\n" + listEvents.get(i).date + "\n" + listEvents.get(i).link + "\n\n");
         }
@@ -138,10 +178,10 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Main main = new Main();
-        main.GetEventsGor();
-//        main.GetEventsAll();
-//        main.GetEventsEdu();
-        main.PrintEvents(main.listEvents);
+        main.getEventsGor();
+        main.getEventsAll();
+        main.getEventsExp();
+        main.printEvents(main.listEvents);
 
     }
 }
