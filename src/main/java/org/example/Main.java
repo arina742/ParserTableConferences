@@ -7,12 +7,7 @@ import org.jsoup.select.Elements;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Locale;
-
-//the listPlaceEvents has been removed from the output, since not all sites can get a place from the home page
-
 
 public class Main {
     //check if file is empty
@@ -47,6 +42,7 @@ public class Main {
         }
     }
 
+    //to change the date output format
     public String replaceMonth(String str) {
         str = str.replace("янв", "01");
         str = str.replace("фев", "02");
@@ -67,7 +63,7 @@ public class Main {
 
     ArrayList<Event> listEvents = new ArrayList<>();
 
-
+    //getting data from the gorodzovet.ru website
     public void getEventsGor() throws IOException {
         String url = "https://gorodzovet.ru/spb/it/";
         Document doc = fileCheck("gorodzovet", url);
@@ -89,6 +85,7 @@ public class Main {
         }
     }
 
+    //getting data from the all-events.ru website
     public void getEventsAll() throws IOException {
         String url = "https://all-events.ru/events/calendar/type-is-conferencia/theme-is-informatsionnye_tekhnologii/";
         Document doc = fileCheck("all-events", url);
@@ -117,6 +114,7 @@ public class Main {
     //q: а почему?
     //a: потому что ты сделал так, чтобы сайт не забанил тебя за парсинг
 
+    //getting data from the expomap.ru website
     public void getEventsExp() throws IOException {
         String url = "https://expomap.ru/conference/theme/it-kommunikatsii-svyaz/";
         Document doc = fileCheck("expomap", url);
@@ -161,8 +159,10 @@ public class Main {
                 date = date.replace(".по.", month2 + "-");
             } else {
                 date = date.replace(month1, "");
-                date = date.replace(".по.",   "-");
+                date = date.replace(".по.", "-");
             }
+
+            //todo: make it so that dates of the form 1.05 are converted to 01.05
 
             String link = events.get(i).getElementsByClass("button icon-sm").attr("href");
             listEvents.add(new Event(name, date, "https://expomap.ru" + link));
@@ -175,13 +175,42 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    //converts the data from the string to the int
+    //true - day, false - month
+    public int strToData(String data, boolean type) {
+        if (type) {
+            return Integer.parseInt(data.substring(0, 2));
+        } else {
+            return Integer.parseInt(data.substring(3, 5));
+        }
+    }
 
+    //swaps two elements in the array
+    public void swap(ArrayList<Event> listEvents, int i, int j) {
+        Event temp = listEvents.get(i);
+        listEvents.set(i, listEvents.get(j));
+        listEvents.set(j, temp);
+    }
+
+    //bubble sort
+    public void sortEvents(ArrayList<Event> listEvents) {
+        for (int i = listEvents.size() - 1; i >= 1; i--) {
+            for (int j = 0; j < i; j++) {
+                //idk how comments next string, if you know how to do it easier, please fix it
+                if ((strToData((listEvents.get(j).date), true) > strToData((listEvents.get(j + 1).date), true)) | (strToData((listEvents.get(j).date), false) > strToData((listEvents.get(j + 1).date), false))) {
+                    swap(listEvents, j, j + 1);
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
         Main main = new Main();
         main.getEventsGor();
         main.getEventsAll();
-        main.getEventsExp();
+        //while getEventsExp() is not working correctly, program will not sort events
+//        main.getEventsExp();
+        main.sortEvents(main.listEvents);
         main.printEvents(main.listEvents);
-
     }
 }
