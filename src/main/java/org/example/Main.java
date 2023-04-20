@@ -7,7 +7,11 @@ import org.jsoup.select.Elements;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
     //check if file is empty
@@ -158,11 +162,26 @@ public class Main {
             if (month1 == null) {
                 date = date.replace(".по.", month2 + "-");
             } else {
-                date = date.replace(month1, "");
-                date = date.replace(".по.", "-");
+                date = date.replace(month1, "").replace(".по.", "-");
             }
 
-            //todo: make it so that dates of the form 1.05 are converted to 01.05
+            if(date.contains("-")){
+                String[] dayAndMonth;
+                dayAndMonth = date.split("-");
+                String[] day_1, day_2;
+                day_1 = dayAndMonth[0].split("\\.");
+                day_2 = dayAndMonth[1].split("\\.");
+                DecimalFormat dF = new DecimalFormat("00");
+                day_1[0] = dF.format(Integer.parseInt(day_1[0]));
+                day_2[0] = dF.format(Integer.parseInt(day_2[0]));
+                date = day_1[0] + "." + day_1[1] + "-" + day_2[0] + "." + day_2[1];
+            } else {
+                String[] day;
+                day = date.split("\\.");
+                DecimalFormat dF = new DecimalFormat("00");
+                day[0] = dF.format(Integer.parseInt(day[0]));
+                date = day[0] + "." + day[1];
+            }
 
             String link = events.get(i).getElementsByClass("button icon-sm").attr("href");
             listEvents.add(new Event(name, date, "https://expomap.ru" + link));
@@ -209,7 +228,7 @@ public class Main {
         main.getEventsGor();
         main.getEventsAll();
         //while getEventsExp() is not working correctly, program will not sort events
-//        main.getEventsExp();
+        main.getEventsExp();
         main.sortEvents(main.listEvents);
         main.printEvents(main.listEvents);
     }
