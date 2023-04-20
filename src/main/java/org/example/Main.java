@@ -7,12 +7,11 @@ import org.jsoup.select.Elements;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Locale;
-
-//the listPlaceEvents has been removed from the output, since not all sites can get a place from the home page
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
     //check if file is empty
@@ -20,7 +19,7 @@ public class Main {
         return file.length() == 0;
     }
 
-    public static Document FileCheck(String filename, String url) throws IOException {
+    public static Document fileCheck(String filename, String url) throws IOException {
         File file = new File(filename + ".html");
         FileWriter fileWriter = new FileWriter(file);
         Document doc = null;
@@ -47,12 +46,14 @@ public class Main {
         }
     }
 
+    //to change the date output format
     public String replaceMonth(String str) {
         str = str.replace("янв", "01");
         str = str.replace("фев", "02");
         str = str.replace("мар", "03");
         str = str.replace("апр", "04");
         str = str.replace("май", "05");
+        str = str.replace("мая", "05");
         str = str.replace("июн", "06");
         str = str.replace("июл", "07");
         str = str.replace("авг", "08");
@@ -66,10 +67,10 @@ public class Main {
 
     ArrayList<Event> listEvents = new ArrayList<>();
 
-
-    public void GetEventsGor() throws IOException {
+    //getting data from the gorodzovet.ru website
+    public void getEventsGor() throws IOException {
         String url = "https://gorodzovet.ru/spb/it/";
-        Document doc = FileCheck("gorodzovet", url);
+        Document doc = fileCheck("gorodzovet", url);
 
         Elements events = doc.getElementsByClass("event-block");
         for (int i = 0; i < events.size(); i++) {
@@ -88,9 +89,10 @@ public class Main {
         }
     }
 
-    public void GetEventsAll() throws IOException {
+    //getting data from the all-events.ru website
+    public void getEventsAll() throws IOException {
         String url = "https://all-events.ru/events/calendar/type-is-conferencia/theme-is-informatsionnye_tekhnologii/";
-        Document doc = FileCheck("all-events", url);
+        Document doc = fileCheck("all-events", url);
 
         Elements events = doc.getElementsByClass("event");
         for (int i = 0; i < events.size(); i++) {
@@ -116,32 +118,118 @@ public class Main {
     //q: а почему?
     //a: потому что ты сделал так, чтобы сайт не забанил тебя за парсинг
 
-    public void GetEventsEdu() throws IOException {
+    //getting data from the expomap.ru website
+    public void getEventsExp() throws IOException {
         String url = "https://expomap.ru/conference/theme/it-kommunikatsii-svyaz/";
-        Document doc = FileCheck("expomap", url);
+        Document doc = fileCheck("expomap", url);
 
         Elements events = doc.getElementsByClass("cl-item");
         for (int i = 0; i < events.size(); i++) {
             String name = events.get(i).getElementsByClass("cli-title").text();
             String date = events.get(i).getElementsByClass("cli-date").text();
+            String month1 = null;
+            String month2;
+            int sp = 0, fsp = 0, lsp = 0, msp = 0;
+
+            for (int j = 0; j < date.length(); j++) {
+                if (date.charAt(j) == ' ') {
+                    sp++;
+                    if (sp == 1) {
+                        fsp = j;
+                    }
+                    if (sp == 2) {
+                        msp = j;
+                    }
+                    if (sp >= 4) {
+                        lsp = j;
+                    }
+                }
+            }
+
+            if (sp == 2) {
+                date = date.substring(0, fsp + 4);
+            } else if (sp == 4) {
+                date = date.substring(0, lsp + 4);
+            } else if (sp == 5) {
+                month1 = date.substring(msp, msp + 4);
+                date = date.substring(0, lsp + 4);
+            }
+
+            date = replaceMonth(date);
+
+            month2 = date.substring(date.length() - 3, date.length());
+            date = date.replace("с.", "");
+            if (month1 == null) {
+                date = date.replace(".по.", month2 + "-");
+            } else {
+                date = date.replace(month1, "").replace(".по.", "-");
+            }
+
+            if(date.contains("-")){
+                String[] dayAndMonth;
+                dayAndMonth = date.split("-");
+                String[] day_1, day_2;
+                day_1 = dayAndMonth[0].split("\\.");
+                day_2 = dayAndMonth[1].split("\\.");
+                DecimalFormat dF = new DecimalFormat("00");
+                day_1[0] = dF.format(Integer.parseInt(day_1[0]));
+                day_2[0] = dF.format(Integer.parseInt(day_2[0]));
+                date = day_1[0] + "." + day_1[1] + "-" + day_2[0] + "." + day_2[1];
+            } else {
+                String[] day;
+                day = date.split("\\.");
+                DecimalFormat dF = new DecimalFormat("00");
+                day[0] = dF.format(Integer.parseInt(day[0]));
+                date = day[0] + "." + day[1];
+            }
+
             String link = events.get(i).getElementsByClass("button icon-sm").attr("href");
             listEvents.add(new Event(name, date, "https://expomap.ru" + link));
         }
     }
 
-    public void PrintEvents(ArrayList<Event> listEvents) {
+    public void printEvents(ArrayList<Event> listEvents) {
         for (int i = 0; i < listEvents.size(); i++) {
             System.out.println(listEvents.get(i).name + "\n" + listEvents.get(i).date + "\n" + listEvents.get(i).link + "\n\n");
         }
     }
 
+    //converts the data from the string to the int
+    //true - day, false - month
+    public int strToData(String data, boolean type) {
+        if (type) {
+            return Integer.parseInt(data.substring(0, 2));
+        } else {
+            return Integer.parseInt(data.substring(3, 5));
+        }
+    }
+
+    //swaps two elements in the array
+    public void swap(ArrayList<Event> listEvents, int i, int j) {
+        Event temp = listEvents.get(i);
+        listEvents.set(i, listEvents.get(j));
+        listEvents.set(j, temp);
+    }
+
+    //bubble sort
+    public void sortEvents(ArrayList<Event> listEvents) {
+        for (int i = listEvents.size() - 1; i >= 1; i--) {
+            for (int j = 0; j < i; j++) {
+                //idk how comments next string, if you know how to do it easier, please fix it
+                if ((strToData((listEvents.get(j).date), true) > strToData((listEvents.get(j + 1).date), true)) | (strToData((listEvents.get(j).date), false) > strToData((listEvents.get(j + 1).date), false))) {
+                    swap(listEvents, j, j + 1);
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) throws IOException {
-
         Main main = new Main();
-        main.GetEventsGor();
-//        main.GetEventsAll();
-//        main.GetEventsEdu();
-        main.PrintEvents(main.listEvents);
-
+        main.getEventsGor();
+        main.getEventsAll();
+        //while getEventsExp() is not working correctly, program will not sort events
+        main.getEventsExp();
+        main.sortEvents(main.listEvents);
+        main.printEvents(main.listEvents);
     }
 }
