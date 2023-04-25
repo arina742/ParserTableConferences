@@ -124,8 +124,8 @@ public class Main {
         for (int i = 0; i < events.size(); i++) {
             String name = events.get(i).getElementsByClass("cli-title").text();
             String date = events.get(i).getElementsByClass("cli-date").text();
-            String month1 = null;
-            String month2;
+            String month_1 = null;
+            String month_2;
             int sp = 0, fsp = 0, lsp = 0, msp = 0;
 
             for (int j = 0; j < date.length(); j++) {
@@ -148,18 +148,18 @@ public class Main {
             } else if (sp == 4) {
                 date = date.substring(0, lsp + 4);
             } else if (sp == 5) {
-                month1 = date.substring(msp, msp + 4);
+                month_1 = date.substring(msp, msp + 4);
                 date = date.substring(0, lsp + 4);
             }
 
             date = replaceMonth(date);
 
-            month2 = date.substring(date.length() - 3, date.length());
+            month_2 = date.substring(date.length() - 3, date.length());
             date = date.replace("с.", "");
-            if (month1 == null) {
-                date = date.replace(".по.", month2 + "-");
+            if (month_1 == null) {
+                date = date.replace(".по.", month_2 + "-");
             } else {
-                date = date.replace(month1, "").replace(".по.", "-");
+                date = date.replace(month_1, "").replace(".по.", "-");
             }
 
             if (date.contains("-")) {
@@ -191,10 +191,8 @@ public class Main {
         }
     }
 
-    //converts the data from the string to the int
-    //true - day, false - month
-    public int strToData(String data, boolean type) {
-        if (type) {
+    public int strToData(String data, String dayOrMonth) {
+        if (dayOrMonth.equals("day")) {
             return Integer.parseInt(data.substring(0, 2));
         } else {
             return Integer.parseInt(data.substring(3, 5));
@@ -213,10 +211,10 @@ public class Main {
         for (int i = listEvents.size()-1; i >= 1; i--) {
             for (int j = 0; j < i; j++) {
 
-                int day_1 = strToData((listEvents.get(j).date), true);
-                int day_2 = strToData((listEvents.get(j+1).date), true);
-                int month_1 = strToData((listEvents.get(j).date), false);
-                int month_2 = strToData((listEvents.get(j+1).date), false);
+                int day_1 = strToData((listEvents.get(j).date), "day");
+                int day_2 = strToData((listEvents.get(j+1).date), "day");
+                int month_1 = strToData((listEvents.get(j).date), "month");
+                int month_2 = strToData((listEvents.get(j+1).date), "month");
                 if(((day_1 > day_2) && (month_1 >= month_2)) || (month_1 > month_2) && (day_1 <= day_2)){
                     swap(listEvents, j, j + 1);
                 }
