@@ -8,10 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Main {
     //check if file is empty
@@ -165,7 +162,7 @@ public class Main {
                 date = date.replace(month1, "").replace(".по.", "-");
             }
 
-            if(date.contains("-")){
+            if (date.contains("-")) {
                 String[] dayAndMonth;
                 dayAndMonth = date.split("-");
                 String[] day_1, day_2;
@@ -213,10 +210,14 @@ public class Main {
 
     //bubble sort
     public void sortEvents(ArrayList<Event> listEvents) {
-        for (int i = listEvents.size() - 1; i >= 1; i--) {
+        for (int i = listEvents.size()-1; i >= 1; i--) {
             for (int j = 0; j < i; j++) {
-                //idk how comments next string, if you know how to do it easier, please fix it
-                if ((strToData((listEvents.get(j).date), true) > strToData((listEvents.get(j + 1).date), true)) | (strToData((listEvents.get(j).date), false) > strToData((listEvents.get(j + 1).date), false))) {
+
+                int day_1 = strToData((listEvents.get(j).date), true);
+                int day_2 = strToData((listEvents.get(j+1).date), true);
+                int month_1 = strToData((listEvents.get(j).date), false);
+                int month_2 = strToData((listEvents.get(j+1).date), false);
+                if(((day_1 > day_2) && (month_1 >= month_2)) || (month_1 > month_2) && (day_1 <= day_2)){
                     swap(listEvents, j, j + 1);
                 }
             }
@@ -227,7 +228,6 @@ public class Main {
         Main main = new Main();
         main.getEventsGor();
         main.getEventsAll();
-        //while getEventsExp() is not working correctly, program will not sort events
         main.getEventsExp();
         main.sortEvents(main.listEvents);
         main.printEvents(main.listEvents);
