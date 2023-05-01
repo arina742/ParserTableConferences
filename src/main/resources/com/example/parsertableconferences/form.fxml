@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="600" prefWidth="800" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.parsertableconferences.Parser">
+  <padding>
+    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+  </padding>
+
+  <Button onAction="#Refresh" text="Refresh" />
+  <Button text="Search" />
+  <Button text="Favorite Events" />
+  <TableView fx:id="mainTab" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="375.0" prefWidth="867.0">
+    <columns>
+            <TableColumn fx:id="numColumn" prefWidth="61.99998474121094" text="№" />
+            <TableColumn fx:id="nameColumn" prefWidth="382.39996337890625" text="Name" />
+            <TableColumn fx:id="dateColumn" prefWidth="110.20001220703125" text="Date" />
+            <TableColumn fx:id="linkColumn" minWidth="8.79998779296875" prefWidth="181.0" text="Link" />
+            <TableColumn fx:id="favColumn" prefWidth="112.00002441406252" text="Favotites" />
+    </columns>
+  </TableView>
+    <TextArea fx:id="maintxt" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="119.0" prefWidth="502.0" scaleShape="false" />
+</VBox>
