@@ -5,11 +5,17 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+import javafx.css.PseudoClass;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 import org.jsoup.Jsoup;
@@ -22,12 +28,15 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Parser {
     @FXML
     private Label welcomeText;
     @FXML
     private TextArea maintxt;
+    @FXML
+    private TextField filterField;
 
     @FXML
     protected void onHelloButtonClick() {
@@ -55,47 +64,42 @@ public class Parser {
     }
 
     public static class Event {
-
-        private String num;
-        private String name;
-        private String date;
-        private String link;
-        private Boolean fav;
+        private static String num;
+        private final SimpleStringProperty name;
+        private final SimpleStringProperty date;
+        private final SimpleStringProperty link;
+        private CheckBox select;
 
         public Event(String name, String date, String link) {
-            this.name = name;
-            this.date = date;
-            this.link = link;
-            this.fav = false;
+            this.name = new SimpleStringProperty(name);
+            this.date = new SimpleStringProperty(date);
+            this.link = new SimpleStringProperty(link);
+            this.select = new CheckBox();
         }
 
         public String getNum() {
             return num;
         }
         public String getName() {
-            return name;
+            return name.get();
         }
         public void setName(String namee) {
-            this.name = namee;
+            name.set(namee);
         }
         public String getDate() {
-            return date;
+            return date.get();
         }
         public void setDate(String datee) {
-            this.date = datee;
+            date.set(datee);
         }
         public String getLink() {
-            return link;
+            return link.get();
         }
         public void setLink(String linkk) {
-            this.link = linkk;
+            link.set(linkk);
         }
-        public Boolean getFav() {
-            return fav;
-        }
-        public void setFav(Boolean fav) {
-            this.fav = fav;
-        }
+        public CheckBox getSelect() {return select;}
+        public void setSelect(CheckBox select){this.select = select;}
     }
 
     //to change the date output format
@@ -118,15 +122,14 @@ public class Parser {
     }
 
     ObservableList<Event> listEvents = FXCollections.observableArrayList();
+    ObservableList<Event> favEvents = FXCollections.observableArrayList();
 
-    //
-
     @FXML
-    private TableView mainTab = new TableView<>(listEvents);
+    public TableView mainTab = new TableView<>(listEvents);
     @FXML
-    private TableColumn<Event, String> numColumn, nameColumn, dateColumn, linkColumn;
+    public TableColumn<Event, String> numColumn, nameColumn, dateColumn, linkColumn;
     @FXML
-    private TableColumn<Event, Boolean> favColumn;
+    public TableColumn<Event, Boolean> favColumn;
 
     /**
      * getting data from the gorodzovet.ru website
@@ -275,10 +278,10 @@ public class Parser {
         for (int i = listEvents.size() - 1; i >= 1; i--) {
             for (int j = 0; j < i; j++) {
 
-                int day_1 = strToData(listEvents.get(j).date, "day");
-                int day_2 = strToData(listEvents.get(j + 1).date, "day");
-                int month_1 = strToData(listEvents.get(j).date, "month");
-                int month_2 = strToData(listEvents.get(j + 1).date, "month");
+                int day_1 = strToData(listEvents.get(j).date.get(), "day");
+                int day_2 = strToData(listEvents.get(j + 1).date.get(), "day");
+                int month_1 = strToData(listEvents.get(j).date.get(), "month");
+                int month_2 = strToData(listEvents.get(j + 1).date.get(), "month");
                 if (((day_1 > day_2) && (month_1 >= month_2)) || (month_1 > month_2) && (day_1 <= day_2)) {
                     swap(listEvents, j, j + 1);
                 }
@@ -295,22 +298,59 @@ public class Parser {
         }
     }
 
+    public void GetInfo()
+    {
+        Event info = (Event) mainTab.getSelectionModel().getSelectedItem();
+        String favor;
+        if(info.select.isSelected() == false) favor = "Not favorite";
+        else favor = "Favorite";
+        maintxt.appendText(favor);
+    }
+
     private static final int N = 365;
+
     @FXML
     protected void Refresh() throws IOException{
         StartParcing();
-
-//        for (int i = 0; i < listEvents.size(); i++) {
-//            maintxt.appendText(listEvents.get(i).name + "\n" + listEvents.get(i).date + "\n" + listEvents.get(i).link + "\n\n");
-//        }
 
         numColumn.setCellValueFactory(new PropertyValueFactory<Event, String> ("num"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<Event, String> ("name"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<Event, String> ("date"));
         linkColumn.setCellValueFactory(new PropertyValueFactory<Event, String> ("link"));
-        favColumn.setCellValueFactory(new PropertyValueFactory<>("fav"));
-        favColumn.setCellFactory(tc -> new CheckBoxTableCell<>());
-        mainTab.setItems(listEvents);
+
+        EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                String somtxt = mouseEvent.toString();
+                maintxt.appendText(somtxt);
+                if(mouseEvent.getClickCount() == 2) maintxt.appendText(somtxt);
+            }
+        };
+        linkColumn.addEventHandler(MouseEvent.MOUSE_CLICKED,eventHandler);
+
+        favColumn.setCellValueFactory(new PropertyValueFactory<>("select"));
+
+        FilteredList<Event> filteredEvents = new FilteredList<>(listEvents, b -> true);
+        filterField.textProperty().addListener((observable, oldValue, newValue) -> {filteredEvents.setPredicate(event -> {
+            if(newValue == null || newValue.isEmpty())  {return true;}
+            String lowerCaseFilter = newValue.toLowerCase();
+            if(event.getName().toLowerCase().indexOf(lowerCaseFilter) != -1) {return true;}
+            else if(event.getDate().toLowerCase().indexOf(lowerCaseFilter) != -1) {return true;}
+            else return false;});
+        });
+
+        SortedList<Event> sortedEvents = new SortedList<>(filteredEvents);
+        sortedEvents.comparatorProperty().bind(mainTab.comparatorProperty());
+
+        mainTab.setRowFactory(mainTab -> {
+            TableRow<Event> row = new TableRow<>();
+            row.pseudoClassStateChanged(PseudoClass.getPseudoClass("odd"),
+                    (Integer.parseInt(Event.num))%2 > 0);
+            return row;
+        });
+
+        mainTab.setItems(sortedEvents);
+        mainTab.setEditable(true);
     }
 
     public void StartParcing() throws IOException {
@@ -319,5 +359,10 @@ public class Parser {
         getEventsExp();
         sortEvents(listEvents);
         addNumber(listEvents);
+    }
+
+    public Parser()
+    {
+
     }
 }

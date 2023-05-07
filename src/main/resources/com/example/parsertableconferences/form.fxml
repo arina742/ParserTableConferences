@@ -3,23 +3,35 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox prefHeight="600" prefWidth="800" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.parsertableconferences.Parser">
+<VBox prefHeight="375.0" prefWidth="1006.0" spacing="20.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.parsertableconferences.Parser" >
   <padding>
     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
   </padding>
 
-  <Button onAction="#Refresh" text="Refresh" />
-  <Button text="Search" />
-  <Button text="Favorite Events" />
-  <TableView fx:id="mainTab" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="375.0" prefWidth="867.0">
-    <columns>
-            <TableColumn fx:id="numColumn" prefWidth="61.99998474121094" text="№" />
-            <TableColumn fx:id="nameColumn" prefWidth="382.39996337890625" text="Name" />
-            <TableColumn fx:id="dateColumn" prefWidth="110.20001220703125" text="Date" />
-            <TableColumn fx:id="linkColumn" minWidth="8.79998779296875" prefWidth="181.0" text="Link" />
-            <TableColumn fx:id="favColumn" prefWidth="112.00002441406252" text="Favotites" />
-    </columns>
-  </TableView>
-    <TextArea fx:id="maintxt" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="119.0" prefWidth="502.0" scaleShape="false" />
+    <AnchorPane>
+        <children>
+            <Button onAction="#Refresh" text="Refresh" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0" />
+            <Label text="Search" AnchorPane.leftAnchor="180" AnchorPane.topAnchor="3">
+            <font>
+               <Font size="16.0" />
+            </font></Label>
+            <TextField fx:id="filterField" prefHeight="30.0" prefWidth="249.0" AnchorPane.leftAnchor="235" AnchorPane.topAnchor="0" />
+            <Button onAction="#GetInfo" text="Favorite Events" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="40" />
+            <TableView fx:id="mainTab" prefHeight="500.0" prefWidth="785.0" AnchorPane.leftAnchor="180" AnchorPane.topAnchor="40" >
+                <columns>
+                    <TableColumn fx:id="numColumn" prefWidth="50" text="№" styleClass="center-align"/>
+                    <TableColumn fx:id="nameColumn" prefWidth="382" text="Name" />
+                    <TableColumn fx:id="dateColumn" prefWidth="80" text="Date" />
+                    <TableColumn fx:id="linkColumn" prefWidth="193" sortable="false" text="Link" />
+                    <TableColumn fx:id="favColumn" prefWidth="66" text="Favotites" styleClass="center-align"/>
+                </columns>
+            </TableView>
+            <TextArea fx:id="maintxt" editable="false" prefHeight="226.0" prefWidth="150.0" scaleShape="false" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" />
+        </children>
+    </AnchorPane>
+<!--  <Button onAction="#Refresh" text="Refresh" />-->
+<!--  <Button text="Search" />-->
+<!--  <Button text="Favorite Events" />-->
 </VBox>
