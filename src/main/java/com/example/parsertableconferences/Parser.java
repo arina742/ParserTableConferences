@@ -80,26 +80,38 @@ public class Parser {
         public String getNum() {
             return num;
         }
+
         public String getName() {
             return name.get();
         }
+
         public void setName(String namee) {
             name.set(namee);
         }
+
         public String getDate() {
             return date.get();
         }
+
         public void setDate(String datee) {
             date.set(datee);
         }
+
         public String getLink() {
             return link.get();
         }
+
         public void setLink(String linkk) {
             link.set(linkk);
         }
-        public CheckBox getSelect() {return select;}
-        public void setSelect(CheckBox select){this.select = select;}
+
+        public CheckBox getSelect() {
+            return select;
+        }
+
+        public void setSelect(CheckBox select) {
+            this.select = select;
+        }
     }
 
     //to change the date output format
@@ -133,6 +145,7 @@ public class Parser {
 
     /**
      * getting data from the gorodzovet.ru website
+     *
      * @throws IOException
      */
     public void getEventsGor() throws IOException {
@@ -289,54 +302,64 @@ public class Parser {
         }
     }
 
-    public void addNumber(ObservableList<Event> listEvents)
-    {
+    public void addNumber(ObservableList<Event> listEvents) {
         int i, count;
-        for(i = 0, count = 1; i < listEvents.size(); i++, count++)
-        {
+        for (i = 0, count = 1; i < listEvents.size(); i++, count++) {
             listEvents.get(i).num = String.valueOf(count);
         }
     }
 
-    public void GetInfo()
+    public void GetFavorites() {
+        favEvents.clear();
+        for (Event listEvent : listEvents) {
+            if (listEvent.select.isSelected()) favEvents.add(listEvent);
+        }
+
+        mainTab.setItems(favEvents);
+    }
+
+    public void GetAllEvents()
     {
-        Event info = (Event) mainTab.getSelectionModel().getSelectedItem();
-        String favor;
-        if(info.select.isSelected() == false) favor = "Not favorite";
-        else favor = "Favorite";
-        maintxt.appendText(favor);
+        mainTab.setItems(listEvents);
     }
 
     private static final int N = 365;
 
     @FXML
-    protected void Refresh() throws IOException{
+    protected void Refresh() throws IOException {
+        listEvents.clear();
         StartParcing();
 
-        numColumn.setCellValueFactory(new PropertyValueFactory<Event, String> ("num"));
-        nameColumn.setCellValueFactory(new PropertyValueFactory<Event, String> ("name"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<Event, String> ("date"));
-        linkColumn.setCellValueFactory(new PropertyValueFactory<Event, String> ("link"));
+        numColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("num"));
+        nameColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("name"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("date"));
+        linkColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("link"));
 
         EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 String somtxt = mouseEvent.toString();
                 maintxt.appendText(somtxt);
-                if(mouseEvent.getClickCount() == 2) maintxt.appendText(somtxt);
+                if (mouseEvent.getClickCount() == 2) maintxt.appendText(somtxt);
             }
         };
-        linkColumn.addEventHandler(MouseEvent.MOUSE_CLICKED,eventHandler);
+        linkColumn.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
 
         favColumn.setCellValueFactory(new PropertyValueFactory<>("select"));
 
         FilteredList<Event> filteredEvents = new FilteredList<>(listEvents, b -> true);
-        filterField.textProperty().addListener((observable, oldValue, newValue) -> {filteredEvents.setPredicate(event -> {
-            if(newValue == null || newValue.isEmpty())  {return true;}
-            String lowerCaseFilter = newValue.toLowerCase();
-            if(event.getName().toLowerCase().indexOf(lowerCaseFilter) != -1) {return true;}
-            else if(event.getDate().toLowerCase().indexOf(lowerCaseFilter) != -1) {return true;}
-            else return false;});
+        filterField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredEvents.setPredicate(event -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                if (event.getName().toLowerCase().indexOf(lowerCaseFilter) != -1) {
+                    return true;
+                } else if (event.getDate().toLowerCase().indexOf(lowerCaseFilter) != -1) {
+                    return true;
+                } else return false;
+            });
         });
 
         SortedList<Event> sortedEvents = new SortedList<>(filteredEvents);
@@ -345,7 +368,7 @@ public class Parser {
         mainTab.setRowFactory(mainTab -> {
             TableRow<Event> row = new TableRow<>();
             row.pseudoClassStateChanged(PseudoClass.getPseudoClass("odd"),
-                    (Integer.parseInt(Event.num))%2 > 0);
+                    (Integer.parseInt(Event.num)) % 2 > 0);
             return row;
         });
 
@@ -356,13 +379,13 @@ public class Parser {
     public void StartParcing() throws IOException {
         //getEventsGor();
         getEventsAll();
-        getEventsExp();
+        //if(listEvents == null) "нет подключения к тыренту";
+        //getEventsExp();
         sortEvents(listEvents);
         addNumber(listEvents);
     }
 
-    public Parser()
-    {
+    public Parser() {
 
     }
 }
