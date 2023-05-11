@@ -18,6 +18,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
+import org.example.Main;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -149,16 +150,29 @@ public class Parser {
      * @throws IOException
      */
     public void getEventsGor() throws IOException {
-        String url = "https://gorodzovet.ru/spb/it/";
+        String url = "https://gorodzovet.ru/spb/day2023-06-01/";
         Document doc = fileCheck("gorodzovet", url);
 
-        Elements events = doc.getElementsByClass("event-block");
+        Elements events = doc.getElementsByClass("col-lg-4 col-md-6 col-sm-12 mb-4");
+
         for (int i = 0; i < events.size(); i++) {
             String name = events.get(i).getElementsByTag("h3").text();
             String day = events.get(i).getElementsByClass("event-day").text();
             String date;
             if (day.length() == 0) {
                 date = events.get(i).getElementsByClass("event-date").text();
+
+                String month1 = replaceMonth(date.substring(0, 3).toLowerCase());
+                String month2 = month1;
+
+                if (date.length() > 10) {
+                    month2 = replaceMonth(date.substring(4, 7).toLowerCase());
+                }
+
+                String day1 = date.substring(date.length() - 5, date.length() - 3);
+                String day2 = date.substring(date.length() - 2, date.length());
+
+                date = day1 + "." + month1 + "-" + day2 + "." + month2;
             } else {
                 String month = events.get(i).getElementsByClass("event-month").text().toLowerCase();
                 month = replaceMonth(month);
@@ -166,6 +180,7 @@ public class Parser {
             }
             String link = events.get(i).getElementsByClass("event-link save-click").attr("href");
             listEvents.add(new Event(name, date, "https://gorodzovet.ru" + link));
+
         }
     }
 
@@ -318,8 +333,7 @@ public class Parser {
         mainTab.setItems(favEvents);
     }
 
-    public void GetAllEvents()
-    {
+    public void GetAllEvents() {
         mainTab.setItems(listEvents);
     }
 
@@ -377,10 +391,10 @@ public class Parser {
     }
 
     public void StartParcing() throws IOException {
-        //getEventsGor();
+        getEventsGor();
         getEventsAll();
         //if(listEvents == null) "нет подключения к тыренту";
-        //getEventsExp();
+        getEventsExp();
         sortEvents(listEvents);
         addNumber(listEvents);
     }
