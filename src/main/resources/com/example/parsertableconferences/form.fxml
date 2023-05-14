@@ -12,12 +12,13 @@
 
     <AnchorPane>
         <children>
-            <Button onAction="#Refresh" text="Refresh" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0" />
+<!--            <Button onAction="#Refresh" text="Refresh" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0" />-->
             <Label text="Search" AnchorPane.leftAnchor="180" AnchorPane.topAnchor="3">
             <font>
                <Font size="16.0" />
             </font></Label>
-            <TextField fx:id="filterField" prefHeight="30.0" prefWidth="380.0" AnchorPane.leftAnchor="234" AnchorPane.topAnchor="0" />
+            <TextField fx:id="filterField" prefHeight="30.0" prefWidth="380.0" AnchorPane.leftAnchor="234" AnchorPane.topAnchor="0"  />
+            <Button onAction="#Refresh" text="Refresh" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0"  />
             <Button onAction="#GetFavorites" text="Favorite Events" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="40" />
             <Button onAction="#GetAllEvents" text="All Events" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="80" />
             <TableView fx:id="mainTab" prefHeight="500.0" prefWidth="785.0" AnchorPane.leftAnchor="180" AnchorPane.topAnchor="40" >
@@ -26,12 +27,13 @@
                     <TableColumn fx:id="nameColumn" prefWidth="382" text="Name" />
                     <TableColumn fx:id="dateColumn" prefWidth="80" text="Date" />
                     <TableColumn fx:id="linkColumn" prefWidth="193" sortable="false" text="Link" />
-                    <TableColumn fx:id="favColumn" prefWidth="75" text="Favorites" styleClass="center-align"/>
+                    <TableColumn fx:id="favColumn" prefWidth="76" text="Favorites" styleClass="center-align"/>
                 </columns>
             </TableView>
             <TextArea fx:id="maintxt" editable="false" prefHeight="226.0" prefWidth="150.0" scaleShape="false" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" />
         </children>
     </AnchorPane>
+
 <!--  <Button onAction="#Refresh" text="Refresh" />-->
 <!--  <Button text="Search" />-->
 <!--  <Button text="Favorite Events" />-->
