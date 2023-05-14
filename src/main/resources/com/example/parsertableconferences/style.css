@@ -1,5 +1,6 @@
 .root {
-    -fx-background-color: #1c1a1f;
+    -fx-background: linear-gradient(to bottom right, #1c1a1f, #30D5C8, #ab028f);
+    /*-fx-background-color: #1c1a1f;*/
     -fx-font-family: Segoe UI;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
@@ -39,7 +40,7 @@
 }
 
 .text-field:focused {
-    -fx-border-color: #007ACC;
+    /*-fx-border-color: #007ACC;*/
 }
 
 
@@ -92,7 +93,8 @@
     -fx-text-alignment: CENTER;
     -fx-min-width: 80px;
     -fx-min-height: 32px;
-    -fx-background-color: #1c1a1f;
+    -fx-background: linear-gradient(#1c1a1f, #30D5C8);
+    /*-fx-background-color: #1c1a1f;*/
     -fx-border-width: 3px;
     -fx-border-color: #30D5C8;
     -fx-border-style: solid;
