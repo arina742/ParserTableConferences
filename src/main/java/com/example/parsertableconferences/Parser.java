@@ -1,24 +1,17 @@
 package com.example.parsertableconferences;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.util.Callback;
-import org.example.Main;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -27,9 +20,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class Parser {
     @FXML
@@ -150,7 +140,7 @@ public class Parser {
      * @throws IOException
      */
     public void getEventsGor() throws IOException {
-        String url = "https://gorodzovet.ru/spb/day2023-06-01/";
+        String url = "https://gorodzovet.ru/spb/it/";
         Document doc = fileCheck("gorodzovet", url);
 
         Elements events = doc.getElementsByClass("col-lg-4 col-md-6 col-sm-12 mb-4");
@@ -180,7 +170,6 @@ public class Parser {
             }
             String link = events.get(i).getElementsByClass("event-link save-click").attr("href");
             listEvents.add(new Event(name, date, "https://gorodzovet.ru" + link));
-
         }
     }
 
