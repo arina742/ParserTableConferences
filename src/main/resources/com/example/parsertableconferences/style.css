@@ -111,6 +111,18 @@
     -fx-border-radius: 32px;
 }
 
+#linkbutton{
+    -fx-font-size: 10px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #30D5C8;
+    -fx-text-alignment: CENTER;
+    -fx-min-width: 80px;
+    -fx-min-height: 32px;
+    -fx-border-width: 0px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
 
 /* CheckBox */
 /*.check-box {*/
