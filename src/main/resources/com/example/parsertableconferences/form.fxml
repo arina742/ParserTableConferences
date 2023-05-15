@@ -26,11 +26,10 @@
             <Button onAction="#GetAllEvents" text="All Events" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="80" />
             <TableView fx:id="mainTab" prefHeight="500.0" prefWidth="785.0" AnchorPane.leftAnchor="180" AnchorPane.topAnchor="40">
                 <columns>
-                    <TableColumn fx:id="numColumn" prefWidth="50" styleClass="center-align" text="№" />
-                    <TableColumn fx:id="nameColumn" prefWidth="382" text="Name" />
-                    <TableColumn fx:id="dateColumn" prefWidth="80" text="Date" />
-                    <TableColumn fx:id="linkColumn" prefWidth="193" sortable="false" text="Link" />
-                    <TableColumn fx:id="favColumn" prefWidth="76" styleClass="center-align" text="Favorites" />
+                    <TableColumn fx:id="nameColumn" prefWidth="382" sortable="false" text="Name" resizable="false"/>
+                    <TableColumn fx:id="dateColumn" prefWidth="80" sortable="false" text="Date" resizable="false"/>
+                    <TableColumn fx:id="infoColumn" prefWidth="193" sortable="false" text="Info" resizable="false"/>
+                    <TableColumn fx:id="favColumn" prefWidth="76" sortable="false" styleClass="center-align" text="Favorites" resizable="false"/>
                 </columns>
             </TableView>
             <TextArea fx:id="maintxt" editable="false" prefHeight="226.0" prefWidth="150.0" scaleShape="false" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" />

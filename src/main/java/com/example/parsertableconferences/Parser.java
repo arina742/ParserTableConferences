@@ -1,5 +1,7 @@
 package com.example.parsertableconferences;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,16 +12,24 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.util.Random;
 
 public class Parser {
     @FXML
@@ -29,29 +39,21 @@ public class Parser {
     @FXML
     private TextField filterField;
 
+    ObservableList<Event> listEvents = FXCollections.observableArrayList();
+    ObservableList<Event> favEvents = FXCollections.observableArrayList();
+
+    @FXML
+    public TableView mainTab = new TableView<>(listEvents);
+    @FXML
+    public TableColumn<Event, String> numColumn, nameColumn, dateColumn;
+    @FXML
+    public TableColumn<Event, Boolean> favColumn;
+    @FXML
+    public TableColumn<Event, Void> infoColumn;
+
     @FXML
     protected void onHelloButtonClick() {
         welcomeText.setText("underidoderidoderiododeriodoo - Winston Churchill");
-    }
-
-    //check if file is empty
-    public static boolean isFileEmpty(File file) {
-        return file.length() == 0;
-    }
-
-    public static Document fileCheck(String filename, String url) throws IOException {
-        File file = new File(filename + ".html");
-        FileWriter fileWriter = new FileWriter(file);
-        Document doc = null;
-
-        if (file.exists()) {
-            if (isFileEmpty(file)) {
-                doc = Jsoup.connect(url).get();
-                fileWriter.write(String.valueOf(doc));
-            }
-        }
-        doc = Jsoup.parse(file, "UTF-8", url);
-        return doc;
     }
 
     public static class Event {
@@ -59,13 +61,15 @@ public class Parser {
         private final SimpleStringProperty name;
         private final SimpleStringProperty date;
         private final SimpleStringProperty link;
-        private CheckBox select;
+        //private CheckBox select;
+        private final SimpleBooleanProperty favorite;
 
         public Event(String name, String date, String link) {
             this.name = new SimpleStringProperty(name);
             this.date = new SimpleStringProperty(date);
             this.link = new SimpleStringProperty(link);
-            this.select = new CheckBox();
+            this.favorite = new SimpleBooleanProperty();
+            //this.select = new CheckBox();
         }
 
         public String getNum() {
@@ -96,16 +100,45 @@ public class Parser {
             link.set(linkk);
         }
 
-        public CheckBox getSelect() {
-            return select;
+//        public CheckBox getSelect() {
+//            return select;
+//        }
+//
+//        public void setSelect(CheckBox select) {
+//            this.select = select;
+//        }
+
+        public SimpleBooleanProperty getFavorite(){
+            return favorite;
         }
 
-        public void setSelect(CheckBox select) {
-            this.select = select;
+        public void setFavorite(boolean fav)
+        {
+            favorite.set(fav);
         }
     }
 
-    //to change the date output format
+    //проверка файла на пустоту
+    public static boolean isFileEmpty(File file) {
+        return file.length() == 0;
+    }
+
+    public static Document fileCheck(String filename, String url) throws IOException {
+        File file = new File(filename + ".html");
+        FileWriter fileWriter = new FileWriter(file);
+        Document doc = null;
+
+        if (file.exists()) {
+            if (isFileEmpty(file)) {
+                doc = Jsoup.connect(url).get();
+                fileWriter.write(String.valueOf(doc));
+            }
+        }
+        doc = Jsoup.parse(file, "UTF-8", url);
+        return doc;
+    }
+
+    //смена формата даты
     public String replaceMonth(String str) {
         str = str.replace("янв", "01");
         str = str.replace("фев", "02");
@@ -124,21 +157,7 @@ public class Parser {
         return str;
     }
 
-    ObservableList<Event> listEvents = FXCollections.observableArrayList();
-    ObservableList<Event> favEvents = FXCollections.observableArrayList();
-
-    @FXML
-    public TableView mainTab = new TableView<>(listEvents);
-    @FXML
-    public TableColumn<Event, String> numColumn, nameColumn, dateColumn, linkColumn;
-    @FXML
-    public TableColumn<Event, Boolean> favColumn;
-
-    /**
-     * getting data from the gorodzovet.ru website
-     *
-     * @throws IOException
-     */
+    //получение данных с сайта gorozovet.ru
     public void getEventsGor() throws IOException {
         String url = "https://gorodzovet.ru/spb/it/";
         Document doc = fileCheck("gorodzovet", url);
@@ -173,7 +192,7 @@ public class Parser {
         }
     }
 
-    //getting data from the all-events.ru website
+    //получение данных с сайта all-events.ru
     public void getEventsAll() throws IOException {
         String url = "https://all-events.ru/events/calendar/type-is-conferencia/theme-is-informatsionnye_tekhnologii/";
         Document doc = fileCheck("all-events", url);
@@ -197,7 +216,7 @@ public class Parser {
         }
     }
 
-    //getting data from the expomap.ru website
+    //получение данных с сайта expomap.ru
     public void getEventsExp() throws IOException {
         String url = "https://expomap.ru/conference/theme/it-kommunikatsii-svyaz/";
         Document doc = fileCheck("expomap", url);
@@ -267,12 +286,6 @@ public class Parser {
         }
     }
 
-    public void printEvents(ObservableList<Event> listEvents) {
-        for (int i = 0; i < listEvents.size(); i++) {
-            System.out.println(listEvents.get(i).name + "\n" + listEvents.get(i).date + "\n" + listEvents.get(i).link + "\n\n");
-        }
-    }
-
     public int strToData(String data, String dayOrMonth) {
 
         if (dayOrMonth.equals("day")) {
@@ -283,14 +296,14 @@ public class Parser {
         }
     }
 
-    //swaps two elements in the array
+    //смена двух элементов в массиве
     public void swap(ObservableList<Event> listEvents, int i, int j) {
         Event temp = listEvents.get(i);
         listEvents.set(i, listEvents.get(j));
         listEvents.set(j, temp);
     }
 
-    //bubble sort
+    //сортировка пузырьком
     public void sortEvents(ObservableList<Event> listEvents) {
         for (int i = listEvents.size() - 1; i >= 1; i--) {
             for (int j = 0; j < i; j++) {
@@ -313,43 +326,102 @@ public class Parser {
         }
     }
 
+    //вывод в таблицу массива с избранными ивентами
     public void GetFavorites() {
         favEvents.clear();
-        for (Event listEvent : listEvents) {
-            if (listEvent.select.isSelected()) favEvents.add(listEvent);
-        }
-
+//        for (Event listEvent : listEvents) {
+//            if (listEvent.select.isSelected()) favEvents.add(listEvent);
+//            if(listEvent.favorite.get()) favEvents.add(listEvent);
+//        }
         mainTab.setItems(favEvents);
     }
 
+    //вывод в таблицу массива со всеми ивентами
     public void GetAllEvents() {
         mainTab.setItems(listEvents);
     }
 
-    private static final int N = 365;
+    //метод, определяющий находится ли введенное число в пределах дат ивента, требуется для поиска
+    public boolean DateBetween(Event e, String filter)
+    {
+        if(e.getDate().length() != 11 || !filter.matches("[-+]?\\d+") ) return false;
+        Integer filterDate = Integer.parseInt(filter);
+        Integer dayStart = Integer.parseInt(String.valueOf(e.getDate().charAt(0)) + String.valueOf(e.getDate().charAt(1)));
+        Integer dayEnd = Integer.parseInt(String.valueOf(e.getDate().charAt(6)) + String.valueOf(e.getDate().charAt(7)));
+        Integer monthStart = Integer.parseInt(String.valueOf(e.getDate().charAt(3)) + String.valueOf(e.getDate().charAt(4)));
+        Integer monthEnd = Integer.parseInt(String.valueOf(e.getDate().charAt(9)) + String.valueOf(e.getDate().charAt(10)));
+        if(dayStart < filterDate && filterDate < dayEnd && monthStart == monthEnd) return true;
+        else if(monthStart != monthEnd && dayStart < filterDate && filterDate < dayEnd + (monthEnd - monthStart) * 30) return true;
+        else return false;
+    }
 
     @FXML
     protected void Refresh() throws IOException {
         listEvents.clear();
         StartParcing();
 
-        numColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("num"));
+        // создание фабрик значений для всех столбцов
         nameColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("name"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("date"));
-        linkColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("link"));
 
-        EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                String somtxt = mouseEvent.toString();
-                maintxt.appendText(somtxt);
-                if (mouseEvent.getClickCount() == 2) maintxt.appendText(somtxt);
+        Callback<TableColumn<Event, Void>, TableCell<Event, Void>> linkCellFactory = new Callback<TableColumn<Event, Void>, TableCell<Event, Void>>()
+        {
+            public TableCell<Event, Void> call(TableColumn<Event, Void> param) {
+                final TableCell<Event, Void> cell = new TableCell<Event, Void>() {
+                    private final Button button = new Button("Button");
+                    {
+                        button.setId("linkbutton");
+                        //button.setText(getTableView().getItems().get(getIndex()).getLink());
+                        button.setText("info");
+
+                        // обработчик события нажатия на кнопку
+                        button.setOnAction((event) -> {
+                            // получаем объект, соответствующий строке таблицы
+                            Event obj = getTableView().getItems().get(getIndex());
+                            // выполняем действия при нажатии на кнопку
+                            try {
+                                java.awt.Desktop.getDesktop().browse(new URI(obj.getLink()));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            } catch (URISyntaxException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                    }
+                    @Override
+                    protected void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(button);
+                        }
+                    }
+                };
+                return cell;
             }
         };
-        linkColumn.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
+        infoColumn.setCellFactory(linkCellFactory);
 
-        favColumn.setCellValueFactory(new PropertyValueFactory<>("select"));
+        //favColumn.setCellValueFactory(new PropertyValueFactory<>("select"));
+        favColumn.setCellValueFactory(new PropertyValueFactory<>("favorite"));
+        favColumn.setCellFactory(CheckBoxTableCell.forTableColumn(favColumn));
+        favColumn.setCellFactory(favColumn -> {
+            CheckBoxTableCell<Event, Boolean> cell = new CheckBoxTableCell<>();
+            cell.selectedProperty().addListener((obs, oldValue, newValue) -> {
+                Event e = cell.getTableRow().getItem();
+                if(e != null){
+                    e.setFavorite(newValue);
+                    if(cell.isSelected()) favEvents.add(e);
+                    e.setFavorite(!e.getFavorite().get());
+                    // сюды писать сохранение в файл
+                }
+            });
+            return cell;
+        });
 
+
+        // записываем listevents в FilteredList чтобы осуществлять поиск по значению в filterField
         FilteredList<Event> filteredEvents = new FilteredList<>(listEvents, b -> true);
         filterField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredEvents.setPredicate(event -> {
@@ -357,17 +429,17 @@ public class Parser {
                     return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
-                if (event.getName().toLowerCase().indexOf(lowerCaseFilter) != -1) {
-                    return true;
-                } else if (event.getDate().toLowerCase().indexOf(lowerCaseFilter) != -1) {
-                    return true;
-                } else return false;
+                if (event.getName().toLowerCase().indexOf(lowerCaseFilter) != -1) return true;
+                else if (event.getDate().toLowerCase().indexOf(lowerCaseFilter) != -1) return true;
+                else if (DateBetween(event, lowerCaseFilter)) return true;
+                else return false;
             });
         });
 
         SortedList<Event> sortedEvents = new SortedList<>(filteredEvents);
         sortedEvents.comparatorProperty().bind(mainTab.comparatorProperty());
 
+        // чередование цветов в таблице
         mainTab.setRowFactory(mainTab -> {
             TableRow<Event> row = new TableRow<>();
             row.pseudoClassStateChanged(PseudoClass.getPseudoClass("odd"),
