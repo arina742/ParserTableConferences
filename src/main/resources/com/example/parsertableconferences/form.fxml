@@ -5,29 +5,28 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="375.0" prefWidth="1006.0" spacing="20.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.parsertableconferences.Parser">
+<VBox maxHeight="700.0" maxWidth="1000.0" minHeight="600.0" minWidth="900.0" prefHeight="600.0" prefWidth="900.0" spacing="20.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.parsertableconferences.Parser">
   <padding>
     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
   </padding>
 
-    <AnchorPane>
+    <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="571.0" prefWidth="867.0">
         <children>
-            <TextField fx:id="filterField" layoutX="180.0" layoutY="3.0" prefHeight="31.0" prefWidth="385.0" promptText="Type to search" AnchorPane.leftAnchor="180.0" AnchorPane.topAnchor="3.0">
+            <TextField fx:id="filterField" layoutX="130.0" layoutY="3.0" prefHeight="31.0" prefWidth="385.0" promptText="Type to search" AnchorPane.leftAnchor="130.0" AnchorPane.topAnchor="3.0">
             <font>
                <Font size="13.0" />
             </font></TextField>
-            <Button onAction="#Refresh" text="Refresh" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0" />
-            <Button onAction="#GetFavorites" text="Favorite Events" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="40" />
-            <Button onAction="#GetAllEvents" text="All Events" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="80" />
-            <TableView fx:id="mainTab" layoutX="179.0" layoutY="39.0" prefHeight="501.0" prefWidth="735.0" AnchorPane.leftAnchor="180" AnchorPane.topAnchor="39.0">
+            <Button onAction="#Refresh" text="Обновить" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0" />
+            <Button onAction="#GetFavorites" text="Избранное" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="40" />
+            <Button onAction="#GetAllEvents" text="Все события" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="80" />
+            <TableView fx:id="mainTab" layoutX="130.0" layoutY="39.0" prefHeight="530.0" prefWidth="735.0" AnchorPane.leftAnchor="130.0" AnchorPane.topAnchor="39.0">
                 <columns>
-                    <TableColumn fx:id="nameColumn" prefWidth="486.0" resizable="false" sortable="false" text="Name" />
-                    <TableColumn fx:id="dateColumn" prefWidth="116.0" resizable="false" sortable="false" text="Date" />
-                    <TableColumn fx:id="infoColumn" prefWidth="88.0" resizable="false" sortable="false" text="Info" />
+                    <TableColumn fx:id="nameColumn" prefWidth="486.0" resizable="false" sortable="false" text="Название" />
+                    <TableColumn fx:id="dateColumn" prefWidth="116.0" resizable="false" sortable="false" text="Дата" />
+                    <TableColumn fx:id="infoColumn" prefWidth="88.0" resizable="false" sortable="false" />
                     <TableColumn fx:id="favColumn" minWidth="7.0" prefWidth="41.0" resizable="false" sortable="false" styleClass="center-align" text="♥" />
                 </columns>
             </TableView>
-            <TextArea fx:id="maintxt" editable="false" prefHeight="226.0" prefWidth="150.0" scaleShape="false" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" />
         </children>
     </AnchorPane>
 

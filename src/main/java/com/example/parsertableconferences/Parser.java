@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
@@ -113,12 +114,11 @@ public class Parser {
 //            this.select = select;
 //        }
 
-        public SimpleBooleanProperty getFavorite(){
+        public SimpleBooleanProperty getFavorite() {
             return favorite;
         }
 
-        public void setFavorite(boolean fav)
-        {
+        public void setFavorite(boolean fav) {
             favorite.set(fav);
         }
     }
@@ -347,16 +347,16 @@ public class Parser {
     }
 
     //метод, определяющий находится ли введенное число в пределах дат ивента, требуется для поиска
-    public boolean DateBetween(Event e, String filter)
-    {
-        if(e.getDate().length() != 11 || !filter.matches("[-+]?\\d+") ) return false;
+    public boolean DateBetween(Event e, String filter) {
+        if (e.getDate().length() != 11 || !filter.matches("[-+]?\\d+")) return false;
         Integer filterDate = Integer.parseInt(filter);
         Integer dayStart = Integer.parseInt(String.valueOf(e.getDate().charAt(0)) + String.valueOf(e.getDate().charAt(1)));
         Integer dayEnd = Integer.parseInt(String.valueOf(e.getDate().charAt(6)) + String.valueOf(e.getDate().charAt(7)));
         Integer monthStart = Integer.parseInt(String.valueOf(e.getDate().charAt(3)) + String.valueOf(e.getDate().charAt(4)));
         Integer monthEnd = Integer.parseInt(String.valueOf(e.getDate().charAt(9)) + String.valueOf(e.getDate().charAt(10)));
-        if(dayStart < filterDate && filterDate < dayEnd && monthStart == monthEnd) return true;
-        else if(monthStart != monthEnd && dayStart < filterDate && filterDate < dayEnd + (monthEnd - monthStart) * 30) return true;
+        if (dayStart < filterDate && filterDate < dayEnd && monthStart == monthEnd) return true;
+        else if (monthStart != monthEnd && dayStart < filterDate && filterDate < dayEnd + (monthEnd - monthStart) * 30)
+            return true;
         else return false;
     }
 
@@ -369,11 +369,11 @@ public class Parser {
         nameColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("name"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("date"));
 
-        Callback<TableColumn<Event, Void>, TableCell<Event, Void>> linkCellFactory = new Callback<TableColumn<Event, Void>, TableCell<Event, Void>>()
-        {
+        Callback<TableColumn<Event, Void>, TableCell<Event, Void>> linkCellFactory = new Callback<TableColumn<Event, Void>, TableCell<Event, Void>>() {
             public TableCell<Event, Void> call(TableColumn<Event, Void> param) {
                 final TableCell<Event, Void> cell = new TableCell<Event, Void>() {
                     private final Button button = new Button("Button");
+
                     {
                         button.setId("linkbutton");
                         //button.setText(getTableView().getItems().get(getIndex()).getLink());
@@ -393,6 +393,7 @@ public class Parser {
                             }
                         });
                     }
+
                     @Override
                     protected void updateItem(Void item, boolean empty) {
                         super.updateItem(item, empty);
@@ -415,9 +416,9 @@ public class Parser {
             CheckBoxTableCell<Event, Boolean> cell = new CheckBoxTableCell<>();
             cell.selectedProperty().addListener((obs, oldValue, newValue) -> {
                 Event e = cell.getTableRow().getItem();
-                if(e != null){
+                if (e != null) {
                     e.setFavorite(newValue);
-                    if(cell.isSelected()) favEvents.add(e);
+                    if (cell.isSelected()) favEvents.add(e);
                     e.setFavorite(!e.getFavorite().get());
                     // сюды писать сохранение в файл
                 }
