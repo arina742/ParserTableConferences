@@ -12,6 +12,10 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
@@ -20,6 +24,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -372,7 +377,7 @@ public class Parser {
                     {
                         button.setId("linkbutton");
                         //button.setText(getTableView().getItems().get(getIndex()).getLink());
-                        button.setText("info");
+                        button.setText("Подробнее");
 
                         // обработчик события нажатия на кнопку
                         button.setOnAction((event) -> {
@@ -380,7 +385,7 @@ public class Parser {
                             Event obj = getTableView().getItems().get(getIndex());
                             // выполняем действия при нажатии на кнопку
                             try {
-                                java.awt.Desktop.getDesktop().browse(new URI(obj.getLink()));
+                                Desktop.getDesktop().browse(new URI(obj.getLink()));
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             } catch (URISyntaxException e) {

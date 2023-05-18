@@ -12,24 +12,19 @@
 
     <AnchorPane>
         <children>
-<!--            <Button onAction="#Refresh" text="Refresh" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0" />-->
-            <Label text="Search" AnchorPane.leftAnchor="180" AnchorPane.topAnchor="3">
-            <font>
-               <Font size="16.0" />
-            </font></Label>
-            <TextField fx:id="filterField" prefHeight="30.0" prefWidth="380.0" promptText="Type to search" AnchorPane.leftAnchor="234" AnchorPane.topAnchor="0">
+            <TextField fx:id="filterField" layoutX="180.0" layoutY="3.0" prefHeight="31.0" prefWidth="385.0" promptText="Type to search" AnchorPane.leftAnchor="180.0" AnchorPane.topAnchor="3.0">
             <font>
                <Font size="13.0" />
             </font></TextField>
             <Button onAction="#Refresh" text="Refresh" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0" />
             <Button onAction="#GetFavorites" text="Favorite Events" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="40" />
             <Button onAction="#GetAllEvents" text="All Events" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="80" />
-            <TableView fx:id="mainTab" prefHeight="500.0" prefWidth="785.0" AnchorPane.leftAnchor="180" AnchorPane.topAnchor="40">
+            <TableView fx:id="mainTab" layoutX="179.0" layoutY="39.0" prefHeight="501.0" prefWidth="735.0" AnchorPane.leftAnchor="180" AnchorPane.topAnchor="39.0">
                 <columns>
-                    <TableColumn fx:id="nameColumn" prefWidth="382" sortable="false" text="Name" resizable="false"/>
-                    <TableColumn fx:id="dateColumn" prefWidth="80" sortable="false" text="Date" resizable="false"/>
-                    <TableColumn fx:id="infoColumn" prefWidth="193" sortable="false" text="Info" resizable="false"/>
-                    <TableColumn fx:id="favColumn" prefWidth="76" sortable="false" styleClass="center-align" text="Favorites" resizable="false"/>
+                    <TableColumn fx:id="nameColumn" prefWidth="486.0" resizable="false" sortable="false" text="Name" />
+                    <TableColumn fx:id="dateColumn" prefWidth="116.0" resizable="false" sortable="false" text="Date" />
+                    <TableColumn fx:id="infoColumn" prefWidth="88.0" resizable="false" sortable="false" text="Info" />
+                    <TableColumn fx:id="favColumn" minWidth="7.0" prefWidth="41.0" resizable="false" sortable="false" styleClass="center-align" text="♥" />
                 </columns>
             </TableView>
             <TextArea fx:id="maintxt" editable="false" prefHeight="226.0" prefWidth="150.0" scaleShape="false" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" />
