@@ -17,14 +17,14 @@
                <Font size="13.0" />
             </font></TextField>
             <Button onAction="#Refresh" text="Обновить" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0" />
-            <Button onAction="#GetFavorites" text="Избранное" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="40" />
+            <Button layoutX="100.0" onAction="#GetFavorites" text="Избранное" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="40" />
             <Button onAction="#GetAllEvents" text="Все события" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="80" />
             <TableView fx:id="mainTab" layoutX="130.0" layoutY="39.0" prefHeight="530.0" prefWidth="735.0" AnchorPane.leftAnchor="130.0" AnchorPane.topAnchor="39.0">
                 <columns>
                     <TableColumn fx:id="nameColumn" prefWidth="486.0" resizable="false" sortable="false" text="Название" />
                     <TableColumn fx:id="dateColumn" prefWidth="116.0" resizable="false" sortable="false" text="Дата" />
-                    <TableColumn fx:id="infoColumn" prefWidth="88.0" resizable="false" sortable="false" />
-                    <TableColumn fx:id="favColumn" minWidth="7.0" prefWidth="41.0" resizable="false" sortable="false" styleClass="center-align" text="♥" />
+                    <TableColumn fx:id="infoColumn" prefWidth="81.0" resizable="false" sortable="false" />
+                    <TableColumn fx:id="favColumn" minWidth="7.0" prefWidth="45.66668701171875" resizable="false" sortable="false" styleClass="center-align" text="♥" />
                 </columns>
             </TableView>
         </children>
