@@ -13,10 +13,10 @@ public class MainApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("form.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 900, 600);
 
-        stage.setMinHeight(600);
-        stage.setMinWidth(900);
-        stage.setMaxHeight(601);
-        stage.setMaxWidth(901);
+        stage.setMinHeight(650);
+        stage.setMinWidth(950);
+        stage.setMaxHeight(650);
+        stage.setMaxWidth(950);
 
         stage.setTitle("Winston Churchill");
         stage.setScene(scene);
