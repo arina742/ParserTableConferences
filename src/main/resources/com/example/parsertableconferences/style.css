@@ -13,7 +13,6 @@
     size: 14px;
 }
 
-
 /* Pane */
 .pane-grid {
     -fx-background-color: #ffffff;
@@ -114,7 +113,7 @@
 #linkbutton{
     -fx-font-size: 10px;
     -fx-font-weight: 900;
-    -fx-text-fill: #30D5C8;
+    -fx-text-fill: #0000FF;
     -fx-text-alignment: CENTER;
     -fx-min-width: 80px;
     -fx-min-height: 32px;
