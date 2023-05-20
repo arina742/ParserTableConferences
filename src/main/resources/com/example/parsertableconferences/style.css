@@ -282,3 +282,27 @@
 
 .table-view .column-drag-header {
 }
+
+#refreshButton{
+    -fx-font-size: 20px;
+    -fx-font-weight: 900;
+    -fx-border-width: 0px;
+}
+
+#refreshButton:hover{
+    -fx-font-size: 25;
+}
+
+/*#linkbutton{*/
+/*    -fx-font-size: 10px;*/
+/*    -fx-font-weight: 900;*/
+/*    -fx-text-fill: #0000FF;*/
+/*    -fx-text-alignment: CENTER;*/
+/*    -fx-border-width: 0px;*/
+/*}*/
+
+/*#linkbutton:hover{*/
+/*    -fx-font-size: 11px;*/
+/*    -fx-background-color: rgba(1, 1, 1, 0);*/
+/*    -fx-border-radius: 32px;*/
+/*}*/
