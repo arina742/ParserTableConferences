@@ -392,3 +392,18 @@
     -fx-content-display: none;
 }
 
+#linkButton{
+    -fx-background-position: center;
+    -fx-text-fill: #0066cc;
+    -fx-border-width: 0px;
+    -fx-font-size: 13px;
+    -fx-background-color: transporent;
+}
+
+#linkButton:hover{
+    -fx-font-size: 14px;
+}
+
+#linkButton:focused{
+    -fx-text-fill: #551a8b;
+}
