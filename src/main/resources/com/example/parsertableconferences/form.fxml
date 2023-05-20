@@ -4,6 +4,7 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
 <VBox prefHeight="650.0" prefWidth="950.0" spacing="20.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.parsertableconferences.Parser">
@@ -11,7 +12,7 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 
-    <AnchorPane prefHeight="549.0" prefWidth="910.0">
+    <AnchorPane id="refreshButton" fx:id="refershButton" onMouseClicked="#Refresh" prefHeight="549.0" prefWidth="910.0">
         <children>
             <TextField fx:id="filterField" layoutX="122.0" layoutY="1.0" prefHeight="31.0" prefWidth="421.0" promptText="Поиск..." AnchorPane.leftAnchor="122.0" AnchorPane.topAnchor="1.0">
                 <font>
@@ -20,10 +21,6 @@
                 <cursor>
                     <Cursor fx:constant="TEXT" />
                 </cursor></TextField>
-            <Button onAction="#Refresh" text="Обновить" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0">
-                <cursor>
-                    <Cursor fx:constant="HAND" />
-                </cursor></Button>
             <Button onAction="#GetFavorites" text="Избранное" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="40">
                 <cursor>
                     <Cursor fx:constant="HAND" />
@@ -32,7 +29,7 @@
                 <cursor>
                     <Cursor fx:constant="HAND" />
                 </cursor></Button>
-            <TableView fx:id="mainTab" layoutX="122.0" layoutY="38.0" prefHeight="491.0" prefWidth="721.0" AnchorPane.leftAnchor="122.0" AnchorPane.topAnchor="38.0">
+            <TableView fx:id="mainTab" layoutX="122.0" layoutY="40.0" prefHeight="491.0" prefWidth="721.0" AnchorPane.leftAnchor="122.0" AnchorPane.topAnchor="40.0">
                 <columns>
                     <TableColumn fx:id="numColumn" maxWidth="0.0" minWidth="0.0" prefWidth="0.0" resizable="false" styleClass="center-align" text="֍-_-֍" />
                     <TableColumn fx:id="nameColumn" editable="false" prefWidth="420.0" resizable="false" sortable="false" text="Название" />
@@ -41,6 +38,11 @@
                     <TableColumn fx:id="favColumn" prefWidth="56.0" resizable="false" styleClass="center-align" text="♥" />
                 </columns>
             </TableView>
+         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="42.0" layoutX="467.0" layoutY="314.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="48.0" />
+         <Button fx:id="testButton" layoutX="443.0" layoutY="314.0" maxHeight="36.0" maxWidth="392.0" minHeight="31.0" minWidth="56.0" mnemonicParsing="false" opacity="0.9" prefHeight="36.0" prefWidth="56.0">
+            <cursor>
+               <Cursor fx:constant="HAND" />
+            </cursor></Button>
         </children>
     </AnchorPane>
 
