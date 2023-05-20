@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -19,6 +20,8 @@ import org.jsoup.select.Elements;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 
 public class Parser {
@@ -130,7 +133,10 @@ public class Parser {
     @FXML
     public TableView mainTab = new TableView<>(listEvents);
     @FXML
-    public TableColumn<Event, String> numColumn, nameColumn, dateColumn, linkColumn;
+    public TableColumn<Event, String> numColumn, nameColumn, dateColumn;
+
+    @FXML
+    public TableColumn<Event, Void> linkColumn;
     @FXML
     public TableColumn<Event, Boolean> favColumn;
 
@@ -336,7 +342,45 @@ public class Parser {
         numColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("num"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("name"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("date"));
-        linkColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("link"));
+        Callback<TableColumn<Event, Void>, TableCell<Event, Void>> linkCellFactory = new Callback<TableColumn<Event, Void>, TableCell<Event, Void>>()
+        {
+            public TableCell<Event, Void> call(TableColumn<Event, Void> param) {
+                final TableCell<Event, Void> cell = new TableCell<Event, Void>() {
+                    private final Button button = new Button("Button");
+                    {
+                        button.setId("linkButton");
+                        //button.setText(getTableView().getItems().get(getIndex()).getLink());
+                        button.setText("Подробнее");
+
+
+                        // обработчик события нажатия на кнопку
+                        button.setOnAction((event) -> {
+                            // получаем объект, соответствующий строке таблицы
+                            Event obj = getTableView().getItems().get(getIndex());
+                            // выполняем действия при нажатии на кнопку
+                            try {
+                                java.awt.Desktop.getDesktop().browse(new URI(obj.getLink()));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            } catch (URISyntaxException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                    }
+                    @Override
+                    protected void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(button);
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+        linkColumn.setCellFactory(linkCellFactory);
 
         EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
             @Override

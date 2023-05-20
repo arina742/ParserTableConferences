@@ -39,7 +39,7 @@
                 </columns>
             </TableView>
          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="42.0" layoutX="467.0" layoutY="314.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="48.0" />
-         <Button fx:id="testButton" layoutX="443.0" layoutY="314.0" maxHeight="36.0" maxWidth="392.0" minHeight="31.0" minWidth="56.0" mnemonicParsing="false" opacity="0.9" prefHeight="36.0" prefWidth="56.0">
+         <Button fx:id="refreshButton" layoutX="776.0" layoutY="4.0" maxHeight="36.0" maxWidth="463.0" minHeight="31.0" minWidth="57.0" mnemonicParsing="false" opacity="0.9" prefHeight="36.0" prefWidth="57.0">
             <cursor>
                <Cursor fx:constant="HAND" />
             </cursor></Button>

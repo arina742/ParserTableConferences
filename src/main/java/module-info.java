@@ -5,6 +5,7 @@ module com.example.ParserTableConferences {
 //    requires com.dlsc.formsfx;
 //    requires org.kordamp.bootstrapfx.core;
     requires org.jsoup;
+    requires java.desktop;
 
     opens com.example.parsertableconferences to javafx.fxml;
     exports com.example.parsertableconferences;
