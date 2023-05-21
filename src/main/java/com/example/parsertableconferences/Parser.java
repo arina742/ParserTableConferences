@@ -1,6 +1,8 @@
 package com.example.parsertableconferences;
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -17,9 +19,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
@@ -58,6 +58,8 @@ public class Parser {
     }
 
     public static class Event {
+        public static String favoriteEvents;
+        public static String[] favoriteEventsLinks;
         private static String num;
         private final SimpleStringProperty name;
         private final SimpleStringProperty date;
@@ -69,6 +71,47 @@ public class Parser {
             this.date = new SimpleStringProperty(date);
             this.link = new SimpleStringProperty(link);
             this.select = new CheckBox();
+
+            favoriteEvents = "";
+            favoriteEventsLinks = null;
+            favoriteEvents = getFavoriteEvents();
+            favoriteEventsLinks = favoriteEvents.split(",");
+
+            for(String evlink: favoriteEventsLinks)
+                if(evlink.equals(getLink()))
+                    select.setSelected(true);
+
+            select.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+                    if (select.isSelected()) {
+                        favoriteEvents += (getLink() + ",");
+                        saveFavoriteEvents(favoriteEvents);
+                    } else {
+                        favoriteEvents = favoriteEvents.replaceAll((getLink() + ","), "");
+                        saveFavoriteEvents(favoriteEvents);
+                    }
+
+                }
+            });
+        }
+
+        public static String getFavoriteEvents() {
+            String str = new String();
+            try (DataInputStream dis = new DataInputStream(new FileInputStream("favs.dat"))) {
+                str = dis.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(str != null) return str;
+            else return "";
+        }
+
+        public static void saveFavoriteEvents(String favEvents) {
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("favs.dat")))) {
+                writer.write(favEvents); // записываем строку в файл
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         public String getNum() {
@@ -129,6 +172,7 @@ public class Parser {
 
     ObservableList<Event> listEvents = FXCollections.observableArrayList();
     ObservableList<Event> favEvents = FXCollections.observableArrayList();
+    FilteredList<Event> filteredEvents;
 
     @FXML
     public TableView mainTab = new TableView<>(listEvents);
@@ -329,10 +373,40 @@ public class Parser {
     }
 
     public void GetAllEvents() {
-        mainTab.setItems(listEvents);
+        mainTab.setItems(filteredEvents);
     }
 
-    private static final int N = 365;
+    public boolean DateBetween(Event e, String filter) {
+        if (e.getDate().length() != 11 || !filter.matches("[-+]?\\d+")) return false;
+        Integer filterDate = Integer.parseInt(filter);
+        Integer dayStart = Integer.parseInt(String.valueOf(e.getDate().charAt(0)) + String.valueOf(e.getDate().charAt(1)));
+        Integer dayEnd = Integer.parseInt(String.valueOf(e.getDate().charAt(6)) + String.valueOf(e.getDate().charAt(7)));
+        Integer monthStart = Integer.parseInt(String.valueOf(e.getDate().charAt(3)) + String.valueOf(e.getDate().charAt(4)));
+        Integer monthEnd = Integer.parseInt(String.valueOf(e.getDate().charAt(9)) + String.valueOf(e.getDate().charAt(10)));
+        if (dayStart < filterDate && filterDate < dayEnd && monthStart == monthEnd) return true;
+        else if (monthStart != monthEnd && dayStart < filterDate && filterDate < dayEnd + (monthEnd - monthStart) * 30)
+            return true;
+        else return false;
+    }
+
+    public void Search(FilteredList<Event> list) {
+        filterField.textProperty().addListener((observable, oldValue, newValue) -> {
+            list.setPredicate((event) -> {
+                if (newValue != null && !newValue.isEmpty()) {
+                    String lowerCaseFilter = newValue.toLowerCase();
+                    if (event.getName().toLowerCase().indexOf(lowerCaseFilter) != -1) {
+                        return true;
+                    } else if (event.getDate().toLowerCase().indexOf(lowerCaseFilter) != -1) {
+                        return true;
+                    } else {
+                        return this.DateBetween(event, lowerCaseFilter);
+                    }
+                } else {
+                    return true;
+                }
+            });
+        });
+    }
 
     @FXML
     protected void Refresh() throws IOException {
@@ -394,21 +468,8 @@ public class Parser {
 
         favColumn.setCellValueFactory(new PropertyValueFactory<>("select"));
 
-        FilteredList<Event> filteredEvents = new FilteredList<>(listEvents, b -> true);
-        filterField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredEvents.setPredicate(event -> {
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
-                String lowerCaseFilter = newValue.toLowerCase();
-                if (event.getName().toLowerCase().indexOf(lowerCaseFilter) != -1) {
-                    return true;
-                } else if (event.getDate().toLowerCase().indexOf(lowerCaseFilter) != -1) {
-                    return true;
-                } else return false;
-            });
-        });
-
+        filteredEvents = new FilteredList<>(listEvents, b -> true);
+        Search(filteredEvents);
         SortedList<Event> sortedEvents = new SortedList<>(filteredEvents);
         sortedEvents.comparatorProperty().bind(mainTab.comparatorProperty());
 
